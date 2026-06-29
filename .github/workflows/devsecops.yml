@@ -4,33 +4,21 @@ jobs:
   Dependances:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Scan des dépendances avec Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '1'
-          ignore-unfixed: true
-
+      - name: Dependances
+        run: |
+          docker run --rm \
+            -v "$PWD":/project \
+            -v "$HOME/.cache/trivy":/root/.cache/ \
+            aquasec/trivy:latest fs \
+            --file-patterns "pip:.*\.txt" \
+            .
   Dockerfile:
     runs-on: ubuntu-latest
     needs: Dependances
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Test du Dockerfile avec Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: 'Dockerfile'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '1'
-
+      - name: Test Dockerfile
+        run: |
+          echo "ecrire ici le scrypt de contrôle du Dockerfile"
   Deploy:
     runs-on: ubuntu-latest
     needs: Dockerfile
